@@ -22,7 +22,19 @@ plugin = Plugin(
 tabletop_manager = Manager()
 
 
-@plugin.handle(["创建扑克牌"], {"user_id", "group_id"})
+@plugin.handle({"桌游小助手帮助"}, {"group_id", "permission"})
+async def _(event: Event):
+    return (
+        "帮助\n"
+        "群牌堆指令示例:\n 重置群牌堆 2副牌 无小丑牌 有人头牌 每次抽1张"
+        "重置群牌堆\n"
+        "抽扑克牌\n"
+        "本群牌堆信息\n"
+        "掷骰帮助\n.r 掷骰\n.rp 劣势掷骰\n.rb 优势掷骰\n示例：.r2d6+d20+1"
+    )
+
+
+@plugin.handle(["重置群牌堆"], {"user_id", "group_id"})
 async def _(event: Event):
     def args_parse(args: Sequence[str]):
         patterns = {
@@ -43,7 +55,7 @@ async def _(event: Event):
             del patterns[key]
 
         if "n" in kwargs:
-            kwargs["n"] = int(kwargs["n"])
+            kwargs["n"] = min(int(kwargs["n"]), 100)  # 防止卡片数量过多
         if "x" in kwargs:
             kwargs["x"] = int(kwargs["x"])
         if "jqk" in kwargs:
@@ -73,7 +85,7 @@ async def _(event: Event):
     return f"扑克牌创建成功！\n{tabletop.pile.info()}"
 
 
-@plugin.handle({"重置扑克牌"}, {"group_id", "permission"})
+@plugin.handle({"重置群牌堆"}, {"group_id", "permission"})
 async def _(event: Event):
     tabletop_manager[event.group_id].pile = None
     return "本群扑克牌已重置"
@@ -106,7 +118,7 @@ async def _(event: Event):
         return f"{handshow}\n{tips}"
 
 
-@plugin.handle({"本群扑克牌信息"}, {"group_id"})
+@plugin.handle({"本群牌堆信息"}, {"group_id"})
 async def _(event: Event):
     pile = tabletop_manager[event.group_id].pile
     if pile is None:
@@ -123,8 +135,6 @@ async def _(event: Event):
     elif dice_cmd.startswith("b"):
         dice_cmd = dice_cmd[1:]
         mode = "b"
-    elif dice_cmd.startswith("help"):
-        return "掷骰帮助\n.r 掷骰\n.rp 劣势掷骰\n.rb 优势掷骰\n示例：.r2d6+d20+1"
     else:
         mode = "n"
     d1 = roll(dice_cmd)

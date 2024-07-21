@@ -32,7 +32,7 @@ class PokerPile:
         jqk: 是否包含人头牌：True
         x: 指定单次抽牌张数：0 不限制（默认1张）
         指令示例：
-            创建扑克牌 3副牌 无大小王 有人头牌 每次抽1张
+            创建扑克牌 3副牌 无小丑牌 有人头牌 每次抽1张
         """
         self.creater = creater
         self.create_time = datetime.now()
