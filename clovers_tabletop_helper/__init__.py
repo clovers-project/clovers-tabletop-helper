@@ -26,7 +26,7 @@ tabletop_manager = Manager()
 async def _(event: Event):
     return (
         "帮助\n"
-        "群牌堆指令示例:\n 重置群牌堆 2副牌 无小丑牌 有人头牌 每次抽1张"
+        "群牌堆指令示例:\n创建群牌堆 2副牌 无小丑牌 有人头牌 每次抽1张\n"
         "重置群牌堆\n"
         "抽扑克牌\n"
         "本群牌堆信息\n"
@@ -34,7 +34,7 @@ async def _(event: Event):
     )
 
 
-@plugin.handle(["重置群牌堆"], {"user_id", "group_id"})
+@plugin.handle(["创建群牌堆"], {"user_id", "group_id"})
 async def _(event: Event):
     def args_parse(args: Sequence[str]):
         patterns = {
