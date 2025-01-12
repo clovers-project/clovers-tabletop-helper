@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "clovers-poker"
-version = "0.2.0"
+name = "clovers_tabletop_helper"
+version = "0.1.0"
 description = ""
 authors = ["karisaya <1048827424@qq.com>"]
 readme = "README.md"
