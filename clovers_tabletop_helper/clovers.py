@@ -1,4 +1,4 @@
-from clovers.core.plugin import Event as CloversEvent
+from clovers import Event as CloversEvent
 
 
 class Event:
@@ -6,9 +6,13 @@ class Event:
         self.event: CloversEvent = event
 
     @property
+    def command(self) -> str:
+        return self.event.raw_command
+
+    @property
     def user_id(self) -> str:
-        return self.event.kwargs["user_id"]
+        return self.event.properties["user_id"]
 
     @property
     def group_id(self) -> str:
-        return self.event.kwargs["group_id"]
+        return self.event.properties["group_id"]

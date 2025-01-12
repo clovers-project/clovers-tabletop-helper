@@ -1,7 +1,7 @@
 import re
 from collections.abc import Sequence
 
-from clovers.core.plugin import Plugin, Result
+from clovers import Plugin, Result
 from .clovers import Event
 from .manager import Manager, PokerPile, roll
 
@@ -34,7 +34,7 @@ async def _(event: Event):
     )
 
 
-@plugin.handle(["创建群牌堆"], {"user_id", "group_id"})
+@plugin.handle(["创建群牌堆"], ["user_id", "group_id"])
 async def _(event: Event):
     def args_parse(args: Sequence[str]):
         patterns = {
@@ -69,7 +69,7 @@ async def _(event: Event):
     tabletop = tabletop_manager[group_id]
     if tabletop.pile:
 
-        @plugin.temp_handle(f"{user_id} {group_id}", extra_args={"user_id", "group_id"}, timeout=60)
+        @plugin.temp_handle(f"{user_id} {group_id}", ["user_id", "group_id"], timeout=60)
         async def _(t_event: Event, finish: Plugin.Finish):
             if t_event.user_id != user_id or t_event.group_id != group_id:
                 return
@@ -85,13 +85,13 @@ async def _(event: Event):
     return f"扑克牌创建成功！\n{tabletop.pile.info()}"
 
 
-@plugin.handle({"重置群牌堆"}, {"group_id", "permission"})
+@plugin.handle(["重置群牌堆"], ["group_id", "permission"])
 async def _(event: Event):
     tabletop_manager[event.group_id].pile = None
     return "本群扑克牌已重置"
 
 
-@plugin.handle({"抽扑克牌"}, {"group_id"})
+@plugin.handle(["抽扑克牌"], ["group_id"])
 async def _(event: Event):
     pile = tabletop_manager[event.group_id].pile
     if pile is None:
@@ -118,7 +118,7 @@ async def _(event: Event):
         return f"{handshow}\n{tips}"
 
 
-@plugin.handle({"本群牌堆信息"}, {"group_id"})
+@plugin.handle(["本群牌堆信息"], ["group_id"])
 async def _(event: Event):
     pile = tabletop_manager[event.group_id].pile
     if pile is None:
@@ -126,9 +126,9 @@ async def _(event: Event):
     return pile.info()
 
 
-@plugin.handle({".r"}, {"user_id"})
+@plugin.handle([".r"], ["user_id"])
 async def _(event: Event):
-    dice_cmd = event.event.raw_command[2:]
+    dice_cmd = event.command[2:]
     if dice_cmd.startswith("p"):
         dice_cmd = dice_cmd[1:]
         mode = "p"
