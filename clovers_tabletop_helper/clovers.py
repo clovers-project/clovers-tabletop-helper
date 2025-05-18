@@ -3,7 +3,7 @@ from clovers import Event as CloversEvent
 
 class Event:
     def __init__(self, event: CloversEvent):
-        self.event: CloversEvent = event
+        self.event = event
 
     @property
     def command(self) -> str:
