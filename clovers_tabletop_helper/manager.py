@@ -1,6 +1,7 @@
 import random
 import re
 from datetime import datetime
+from collections.abc import Sequence
 
 
 class GroupTabletop:
@@ -99,6 +100,43 @@ class PokerPile:
     @classmethod
     def show_hand(cls, hands: list[tuple[int, int]], split: str = "\n"):
         return split.join(f"【{cls.POKER_SUIT[suit]}{cls.POKER_POINT[point]}】" for suit, point in hands)
+
+    patterns = {
+        key: re.compile(pattern)
+        for key, pattern in {
+            "n": r"(\d+)副牌",
+            "jokers": r"(无|有)小丑牌",
+            "jqk": r"(无|有)人头牌",
+            "x": r"每次抽(\d+)张",
+        }.items()
+    }
+
+    @classmethod
+    def args_parse(cls, args: Sequence[str]):
+        kwargs = {}
+        patterns = cls.patterns.copy()
+        for arg in args:
+            for key, pattern in patterns.items():
+                match = re.search(pattern, arg)
+                if match:
+                    kwargs[key] = match.group(1)
+                    break
+            else:
+                continue
+            del patterns[key]
+        if "n" in kwargs:
+            kwargs["n"] = min(int(kwargs["n"]), 100)  # 防止卡片数量过多
+        if "x" in kwargs:
+            kwargs["x"] = int(kwargs["x"])
+        if "jqk" in kwargs:
+            kwargs["jqk"] = kwargs["jqk"] == "有"
+        if "jokers" in kwargs:
+            kwargs["jokers"] = kwargs["jokers"] == "有"
+        return kwargs
+
+    @classmethod
+    def create(cls, creater: str, args: Sequence[str]):
+        return cls(creater, **cls.args_parse(args))
 
 
 class Manager:
