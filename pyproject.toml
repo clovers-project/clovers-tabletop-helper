@@ -5,7 +5,7 @@ description = ""
 authors = [{ name = "KarisAya", email = "karisaya@foxmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12,<4.0.0"
-dependencies = ["clovers (>=0.4.3)"]
+dependencies = ["clovers (>=0.4.5)"]
 
 
 [build-system]
