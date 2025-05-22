@@ -2,14 +2,14 @@
 
 [[package]]
 name = "clovers"
-version = "0.4.3"
+version = "0.4.5"
 description = ""
 optional = false
 python-versions = "<4.0.0,>=3.12"
 groups = ["main"]
 files = [
-    {file = "clovers-0.4.3-py3-none-any.whl", hash = "sha256:ba1bc0706b10beafa645d410ae41a88a930b46c3c591f9ab1fab5b7521a2473f"},
-    {file = "clovers-0.4.3.tar.gz", hash = "sha256:0d4197ee3053c4eeb05caf497bcec62390b3d87a59b467ac9e94d1b4d1e6e0d9"},
+    {file = "clovers-0.4.5-py3-none-any.whl", hash = "sha256:3a4533e385dba1e061f55ac028f919ea39500dda81d563ecc2e92043b5c2f616"},
+    {file = "clovers-0.4.5.tar.gz", hash = "sha256:54c4cc8848c9552b73e32aca1257294c7ac409f9fd6cd4d5715fc6d0c7d307c0"},
 ]
 
 [package.dependencies]
