@@ -1,9 +1,11 @@
-from clovers import Event, Plugin, Result, TempHandle
-from .manager import Manager, PokerPile, roll
+from clovers import Plugin, Result, TempHandle
+from .core import Manager, PokerPile, roll
+from .typing import Event, PropertiesProtocol
 
 plugin = Plugin()
+plugin.set_protocol("properties", PropertiesProtocol)
 
-tabletop_manager = Manager()
+manager = Manager()
 
 
 @plugin.handle({"桌游小助手帮助"}, {"group_id", "permission"})
@@ -19,19 +21,19 @@ async def _(event: Event):
     )
 
 
-def identity(user_id: str, group_id: str):
+def identify(user_id: str, group_id: str | None):
     def rule(event: Event):
-        return event.properties["user_id"] == user_id and event.properties["group_id"] == group_id
+        return event.user_id == user_id and event.group_id == group_id
 
     return rule
 
 
 async def confirm(event: Event, handle: TempHandle):
     handle.finish()
-    user_id = event.properties["user_id"]
-    group_id = event.properties["group_id"]
+    user_id = event.user_id
+    group_id = event.group_id or f"private:{user_id}"
     if event.message == "是":
-        tabletop = tabletop_manager[group_id]
+        tabletop = manager[group_id]
         assert (state := handle.state) is not None
         tabletop.pile = PokerPile.create(user_id, state)
         return Result("text", f"扑克牌创建成功！\n{tabletop.pile.info()}")
@@ -41,14 +43,14 @@ async def confirm(event: Event, handle: TempHandle):
 
 @plugin.handle(["创建群牌堆"], ["user_id", "group_id"])
 async def _(event: Event):
-    user_id = event.properties["user_id"]
-    group_id = event.properties["group_id"]
-    tabletop = tabletop_manager[group_id]
+    user_id = event.user_id
+    group_id = event.group_id
+    tabletop = manager[group_id or f"private:{user_id}"]
     if tabletop.pile:
         plugin.temp_handle(
             ["user_id", "group_id"],
             timeout=60,
-            rule=identity(user_id, group_id),
+            rule=identify(user_id, group_id),
             state=event.args,
         )(confirm)
         return Result("text", f"本群已有扑克牌,是否重新创建？\n【请输入是/否】\n{tabletop.pile.info()}")
@@ -56,16 +58,16 @@ async def _(event: Event):
     return Result("text", f"扑克牌创建成功！\n{tabletop.pile.info()}")
 
 
-@plugin.handle(["重置群牌堆"], ["group_id"])
+@plugin.handle(["重置群牌堆"], ["user_id", "group_id"])
 async def _(event: Event):
-    tabletop_manager[event.properties["group_id"]].pile = None
+    manager[event.group_id or f"private:{event.user_id}"].pile = None
     return Result("text", "本群扑克牌已重置")
 
 
-@plugin.handle(["抽扑克牌"], ["group_id"])
+@plugin.handle(["抽扑克牌"], ["user_id", "group_id"])
 async def _(event: Event):
-    group_id = event.properties["group_id"]
-    pile = tabletop_manager[group_id].pile
+    group_id = event.group_id or f"private:{event.user_id}"
+    pile = manager[group_id].pile
     if pile is None:
         return Result("text", "本群没有牌堆，请先输入【创建群牌堆】创建")
     if pile.x:
@@ -77,13 +79,13 @@ async def _(event: Event):
             n = 1
     hands = pile.drawn(n)
     if hands is None:
-        tabletop_manager[group_id].pile = None
+        manager[group_id].pile = None
         return Result("text", "牌库没有足够的牌。本群牌堆已重置。")
     else:
         handshow = pile.show_hand(hands)
         rd = len(pile.poker) - pile.ptr
         if rd < 1:
-            tabletop_manager[group_id].pile = None
+            manager[group_id].pile = None
             tips = "牌库已清空"
         else:
             tips = f"剩余牌数{rd}"
@@ -92,7 +94,7 @@ async def _(event: Event):
 
 @plugin.handle(["本群牌堆信息"], ["group_id"])
 async def _(event: Event):
-    pile = tabletop_manager[event.properties["group_id"]].pile
+    pile = manager[event.group_id or f"private:{event.user_id}"].pile
     if pile is None:
         return "本群没有牌堆，请先输入【创建扑克牌】创建"
     return pile.info()
@@ -125,7 +127,7 @@ async def _(event: Event):
         case _:
             result = f"掷骰{dice_cmd}\n点数为：{d1}"
 
-    return Result("list", [Result("at", event.properties["user_id"]), Result("text", result)])
+    return Result("list", [Result("at", event.user_id), Result("text", result)])
 
 
 __plugin__ = plugin
