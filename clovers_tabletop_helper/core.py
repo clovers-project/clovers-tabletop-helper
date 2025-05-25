@@ -4,6 +4,29 @@ from datetime import datetime
 from collections.abc import Sequence
 
 
+def roll(dice_cmd: str) -> int | None:
+    cmds = dice_cmd.split("+")
+    result = 0
+    for cmd in cmds:
+        if cmd.isdigit():
+            result += int(cmd)
+            continue
+        if match := re.match(r"^(\d*)d(\d+)", cmd):
+            a, b = match.groups()
+            if a:
+                a = int(a)
+                if a > 100:  # 限制骰子数量
+                    return
+            else:
+                a = 1
+            for _ in range(a):
+                result += random.randint(1, int(b))
+            continue
+        return
+
+    return result
+
+
 class GroupTabletop:
     def __init__(
         self,
@@ -140,32 +163,10 @@ class PokerPile:
 
 
 class Manager:
-    _current_tabletop: dict[str, GroupTabletop] = {}
+    def __init__(self):
+        self._current_tabletop: dict[str, GroupTabletop] = {}
 
     def __getitem__(self, index: str) -> GroupTabletop:
         if not index in self._current_tabletop:
             self._current_tabletop[index] = GroupTabletop(index)
         return self._current_tabletop[index]
-
-
-def roll(dice_cmd: str) -> int | None:
-    cmds = dice_cmd.split("+")
-    result = 0
-    for cmd in cmds:
-        if cmd.isdigit():
-            result += int(cmd)
-            continue
-        if match := re.match(r"^(\d*)d(\d+)", cmd):
-            a, b = match.groups()
-            if a:
-                a = int(a)
-                if a > 100:  # 限制骰子数量
-                    return
-            else:
-                a = 1
-            for _ in range(a):
-                result += random.randint(1, int(b))
-            continue
-        return
-
-    return result
