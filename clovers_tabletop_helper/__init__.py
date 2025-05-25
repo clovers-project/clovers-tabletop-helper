@@ -1,8 +1,9 @@
 from clovers import Plugin, EventProtocol, Result, TempHandle
+from typing import Protocol
 from .core import Manager, PokerPile, roll
 
 
-class Event(EventProtocol):
+class Event(EventProtocol, Protocol):
     user_id: str
     group_id: str | None
     permission: int
@@ -128,8 +129,8 @@ async def _(event: Event):
 async def _(event: Event):
     pile = manager[event.group_id or f"private:{event.user_id}"].pile
     if pile is None:
-        return "本群没有牌堆，请先输入【创建扑克牌】创建"
-    return pile.info()
+        return Result("text", "本群没有牌堆，请先输入【创建群牌堆】创建")
+    return Result("text", pile.info())
 
 
 __plugin__ = plugin
