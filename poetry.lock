@@ -2,14 +2,14 @@
 
 [[package]]
 name = "clovers"
-version = "0.4.5"
+version = "0.4.6"
 description = ""
 optional = false
 python-versions = "<4.0.0,>=3.12"
 groups = ["main"]
 files = [
-    {file = "clovers-0.4.5-py3-none-any.whl", hash = "sha256:3a4533e385dba1e061f55ac028f919ea39500dda81d563ecc2e92043b5c2f616"},
-    {file = "clovers-0.4.5.tar.gz", hash = "sha256:54c4cc8848c9552b73e32aca1257294c7ac409f9fd6cd4d5715fc6d0c7d307c0"},
+    {file = "clovers-0.4.6-py3-none-any.whl", hash = "sha256:294aa3e0699dc6629b3e902de9e194af23cee6a72fddac9060f264ca6625bdab"},
+    {file = "clovers-0.4.6.tar.gz", hash = "sha256:2aace848882a10adfcb8de9561da97ec41061a2ebbb76eea6128536bf8467c61"},
 ]
 
 [package.dependencies]
@@ -30,4 +30,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0.0"
-content-hash = "9486c2b88b93f04d960ad471b5206d4a689f4872ca3909b18b37ad90c7f74b76"
+content-hash = "44abd77c9a94fa09af47317ef6bf5dbb51150f7a3d399ebb14394e46d6ad2d99"
